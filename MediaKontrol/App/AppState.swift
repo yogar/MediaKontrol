@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import Observation
 
@@ -18,6 +19,7 @@ final class AppState {
     private var router: MediaCommandRouter?
     private let registry = DestinationRegistry()
     private var pollingTask: Task<Void, Never>?
+    private var permissionPollingTask: Task<Void, Never>?
     private var didSetUp = false
 
     struct DestinationInfo: Identifiable {
@@ -43,9 +45,11 @@ final class AppState {
         let router = MediaCommandRouter(registry: registry, appState: self)
         self.router = router
 
-        // Start interceptor if we have permission
+        // Start interceptor if we have permission, otherwise poll until granted
         if hasAccessibilityPermission {
             startInterception(router: router)
+        } else {
+            startPermissionPolling(router: router)
         }
 
         // Initial volume fetch
@@ -89,7 +93,33 @@ final class AppState {
     func recheckPermission() {
         hasAccessibilityPermission = AccessibilityPermission.isTrusted
         if hasAccessibilityPermission && !isIntercepting, let router {
+            permissionPollingTask?.cancel()
+            permissionPollingTask = nil
             startInterception(router: router)
+        }
+    }
+
+    func quitAndReopen() {
+        let executableURL = Bundle.main.executableURL!
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+        process.arguments = ["-n", Bundle.main.bundlePath]
+        try? process.run()
+        NSApplication.shared.terminate(nil)
+    }
+
+    private func startPermissionPolling(router: MediaCommandRouter) {
+        permissionPollingTask?.cancel()
+        permissionPollingTask = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(1))
+                guard !Task.isCancelled else { break }
+                if AccessibilityPermission.isTrusted {
+                    hasAccessibilityPermission = true
+                    startInterception(router: router)
+                    break
+                }
+            }
         }
     }
 

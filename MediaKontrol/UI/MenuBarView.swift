@@ -35,14 +35,21 @@ struct MenuBarView: View {
             Label("Accessibility Access Required", systemImage: "exclamationmark.triangle.fill")
                 .font(.caption)
                 .foregroundStyle(.orange)
-            Text("Grant access in System Settings > Privacy & Security > Accessibility")
+            Text("Grant access in System Settings › Privacy & Security › Accessibility, then return here.")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-            Button("Recheck Permission") {
-                appState.recheckPermission()
+            HStack(spacing: 8) {
+                Button("Recheck") {
+                    appState.recheckPermission()
+                }
+                .font(.caption)
+                Button("Quit & Reopen") {
+                    appState.quitAndReopen()
+                }
+                .font(.caption)
+                .help("If Recheck doesn't work, quit and reopen the app after granting permission")
             }
-            .font(.caption)
         }
         .padding(8)
         .background(.orange.opacity(0.1))
