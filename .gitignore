@@ -1,0 +1,25 @@
+# Xcode
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# Build output
+build/
+DerivedData/
+*.ipa
+*.xcarchive
+
+# macOS
+.DS_Store
+*.orig
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# CocoaPods (not used, but just in case)
+Pods/
+Podfile.lock
