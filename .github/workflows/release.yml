@@ -35,6 +35,10 @@ jobs:
             "$RUNNER_TEMP/MediaKontrol.xcarchive/Products/Applications/MediaKontrol.app" \
             "$RUNNER_TEMP/MediaKontrol.app"
 
+      - name: Re-sign with full ad-hoc signature
+        run: |
+          codesign --force --deep --sign - "$RUNNER_TEMP/MediaKontrol.app"
+
       - name: Create DMG
         run: |
           hdiutil create \
