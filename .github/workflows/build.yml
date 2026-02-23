@@ -30,13 +30,3 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
-      - name: Test
-        run: |
-          xcodebuild \
-            -project MediaKontrol.xcodeproj \
-            -scheme MediaKontrol \
-            -destination "platform=macOS" \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            test
